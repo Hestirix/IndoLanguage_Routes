@@ -39,26 +39,60 @@ with open(parameters_file, "r", encoding="utf-8-sig", newline="") as file:
         concepts[row["ID"]] = row["Name"]
 
 
-# Read the first five words.
+
+# Ask the user which word they want to find.
+print("LANGUAGE ROUTES")
+print("------------------------------")
+
+search_word = input("Enter a word to search: ").strip().casefold()
+
+# Keep track of how many matching words we find.
+matches = 0
+
+# Open the dataset and search through its records.
 with open(forms_file, "r", encoding="utf-8-sig", newline="") as file:
     reader = csv.DictReader(file)
 
-    print("LANGUAGE ROUTES")
-    print("------------------------------")
-    print("First five words in our dataset:\n")
-
-    for number, row in enumerate(reader, start=1):
-        if number > 10:
-            break
-
+    for row in reader:
         word = row["Form"]
-        language_id = row["Language_ID"]
-        concept_id = row["Parameter_ID"]
 
-        # Retrieve matching names from the dictionaries.
-        language_name = languages.get(language_id, "Unknown")
-        meaning = concepts.get(concept_id, "Unknown")
+        # Compare the dataset word with the user's input.
+        if search_word and word.strip().casefold() == search_word:
+            matches += 1
 
-        print(f"{number}. Word: {word}")
-        print(f"   Language: {language_name}")
-        print(f"   Meaning: {meaning}\n")
+            language_id = row["Language_ID"]
+            concept_id = row["Parameter_ID"]
+
+            language_name = languages.get(language_id, "Unknown")
+            meaning = concepts.get(concept_id, "Unknown")
+
+            print(f"\nResult {matches}")
+            print(f"Word: {word}")
+            print(f"Language: {language_name}")
+            print(f"Meaning: {meaning}")
+
+# Display a message if the search found nothing.
+if matches == 0:
+    print("\nNo matching word was found.")
+
+print(f"\nTotal matches: {matches}")
+
+
+
+# Display the first 10 German words in the dataset.
+print("\nFIRST 10 GERMAN WORDS")
+print("------------------------------")
+
+count = 0
+
+with open(forms_file, "r", encoding="utf-8-sig", newline="") as file:
+    reader = csv.DictReader(file)
+
+    for row in reader:
+        if row["Language_ID"] == "27":
+            count += 1
+
+            print(f"{count}. {row['Form']}")
+
+            if count == 10:
+                break
